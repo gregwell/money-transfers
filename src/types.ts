@@ -46,10 +46,19 @@ export interface Exchange extends MoneyOperation {
   targetCurrency: Currency;
 }
 
+interface HistoryObj extends MoneyOperation {
+  operation: OperationType;
+}
+
+export type Users = User[];
+export type History = HistoryObj[];
+export type ExchangeRates = ExchangeRate[];
+
 export interface System {
-  users: User[];
+  users: Users;
   profits: Profits;
-  exchangeRates: ExchangeRate[];
+  history: History;
+  exchangeRates: ExchangeRates;
 
   getUserIndexById(id: string): number;
 

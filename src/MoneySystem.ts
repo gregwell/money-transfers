@@ -1,5 +1,5 @@
 import {
-  Accounts,
+  History,
   Exchange,
   ExchangeRate,
   MoneyOperation,
@@ -7,7 +7,8 @@ import {
   Profits,
   System,
   Transfer,
-  User,
+  Users,
+  ExchangeRates,
 } from "./types";
 import {
   exchangeRates,
@@ -18,13 +19,15 @@ import {
 import { errors } from "./constants";
 
 export class MoneySystem implements System {
-  users: User[];
+  users: Users;
   profits: Profits;
-  exchangeRates: ExchangeRate[];
+  history: History;
+  exchangeRates: ExchangeRates;
 
   constructor() {
-    this.users = [] as User[];
+    this.users = [] as Users;
     this.profits = initialProfits;
+    this.history = [] as History;
     this.exchangeRates = exchangeRates;
   }
 
