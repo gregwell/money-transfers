@@ -40,7 +40,7 @@ export class MoneySystem implements System {
   };
 
   validateUserSearch = (found: number | User | undefined) => {
-    if (!found || found === -1) {
+    if (found === undefined || found === -1) {
       throw new Error(errors.userNotFound);
     }
 
