@@ -99,20 +99,20 @@ export class MoneySystem implements System {
         rate.pair.includes(currency) && rate.pair.includes(targetCurrency)
     ) as ExchangeRate;
 
-    let rate = ratesPair.rates.buy;
-    let divide = true;
+    const sell = ratesPair.pair[0] === currency;
 
-    if (ratesPair.pair[0] === currency) {
-      rate = ratesPair.rates.sell;
-      divide = false;
-    }
-
-    const convertedAmount = divide ? amount / rate : amount * rate;
+    const convertedAmount = sell
+      ? amount * ratesPair.rates.sell
+      : amount / ratesPair.rates.buy;
 
     this.users[index].accounts[currency] = userCurrencyAmount - amount - profit;
     this.users[index].accounts[targetCurrency] =
       userTargetCurrencyAmount + convertedAmount;
 
     this.profits[OperationType.EXCHANGE][currency] += profit;
+  }
+
+  getProfits(): Profits {
+    return this.profits;
   }
 }

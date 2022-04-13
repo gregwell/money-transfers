@@ -1,14 +1,14 @@
 export enum Currency {
-  PLN,
-  EUR,
-  USD,
+  PLN = "PLN",
+  EUR = "EUR",
+  USD = "USD",
 }
 
 export enum OperationType {
-  DEPOSIT,
-  WITHDRAW,
-  SEND,
-  EXCHANGE,
+  DEPOSIT = "DEPOSIT",
+  WITHDRAW = "WITHDRAW",
+  SEND = "SEND",
+  EXCHANGE = "EXCHANGE",
 }
 
 export interface ExchangeRate {
@@ -59,4 +59,6 @@ export interface System {
   withdraw(withdraw: MoneyOperation): void;
   send(transfer: Transfer): void;
   exchange(exchangeMoney: Exchange): void;
+
+  getProfits(): Profits;
 }
