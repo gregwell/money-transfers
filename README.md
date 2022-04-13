@@ -1,20 +1,26 @@
-![](https://miro.medium.com/max/1000/1*M8AVkWO91P7OH7MrYRe57w.png)
-# typescript-jest-example
-This is an example project for the following articles on [medium.com](https://medium.com):
-- [Testing with JEST in TypeScript](https://itnext.io/testing-with-jest-in-typescript-cc1cd0095421)
-- [Debug your tests in TypeScript with Visual Studio Code](https://bromix.medium.com/debug-your-tests-in-typescript-with-visual-studio-code-911a4cada9cd)
+# Money System
 
-## Project setup
-```
-npm install
-```
+Simulation of a platform on which users will be able to make money transfers between each other and currency exchanges. No UI, no REST API, only interfaces.
 
-### Compile to typescript
-```
-npm run build
-```
+## Business requirements
 
-### Run tests
-```
-npm test
-```
+- the user is represented in the system as an ID; each ID will be unique
+- the platform supports the following currencies: PLN (base currency), EUR, USD
+- by default each user has an account in all available currencies
+- the exchange rate will be set at the start of the application; the platform gives
+  possibility to exchange between all available currencies
+- for each account the following operations are possible:
+  - deposit
+  - withdrawal
+  - transferring funds to another platform user
+  - exchange of funds into another currency
+- the platform charges a commission for each operation; the amount of the commission is set at
+  the moment the application is launched (percentage value of the amount of a particular operation expressed as a floating point number e.g. 0.05 = 5%; 0.002 = 0.2%)
+- the platform allows the user to download the history for a given type of operation, specific currency, date range
+- the platform allows users to access information about the balance and the history of operations for each account (without pagination)
+- the platform enables access to information about profit (profit from operations performed) with possibility to group the profit with respect to the type of operation and currency
+- the platform should support handling basic errors (e.g. execution of operations with a negative value of a given currency)
+
+## How to run
+
+No real-life implementation - to run test suites of written functionalities `npm test`

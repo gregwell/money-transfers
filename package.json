@@ -9,15 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bromix/typescript-jest-example.git"
+    "url": "git+https://github.com/gregwell/money-transfers"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/bromix/typescript-jest-example/issues"
-  },
-  "homepage": "https://github.com/bromix/typescript-jest-example#readme",
+  "homepage": "https://github.com/gregwell/money-transfers",
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/uuid": "^8.3.4",
