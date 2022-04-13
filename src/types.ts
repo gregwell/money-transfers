@@ -23,8 +23,8 @@ export type Accounts = {
   [K in Currency]: number;
 };
 
-export type Profits = {
-  [K in OperationType]: Accounts;
+export type Profits<T> = {
+  [K in OperationType]: T;
 };
 
 export interface User {
@@ -32,10 +32,13 @@ export interface User {
   accounts: Accounts;
 }
 
-export interface MoneyOperation {
-  amount: number;
+export interface BasicOperation {
   currency: Currency;
   userId: string;
+}
+
+export interface MoneyOperation extends BasicOperation {
+  amount: number;
 }
 
 export interface Transfer extends MoneyOperation {
@@ -46,28 +49,38 @@ export interface Exchange extends MoneyOperation {
   targetCurrency: Currency;
 }
 
-interface HistoryObj extends MoneyOperation {
+export interface HistoryObj extends MoneyOperation {
   operation: OperationType;
+  date: number;
 }
 
-export type Users = User[];
-export type History = HistoryObj[];
-export type ExchangeRates = ExchangeRate[];
-
 export interface System {
-  users: Users;
-  profits: Profits;
-  history: History;
-  exchangeRates: ExchangeRates;
+  users: User[];
+  profits: Profits<Accounts>;
+  history: HistoryObj[];
+  exchangeRates: ExchangeRate[];
 
   getUserIndexById(id: string): number;
+  getUserById(id: string): User;
+  validateUserSearch(found: number | User | undefined): number | User;
 
   addUser(): string;
 
-  deposit(deposit: MoneyOperation): void;
-  withdraw(withdraw: MoneyOperation): void;
-  send(transfer: Transfer): void;
-  exchange(exchangeMoney: Exchange): void;
+  deposit(props: MoneyOperation): void;
+  withdraw(props: MoneyOperation): void;
+  send(props: Transfer): void;
+  exchange(props: Exchange): void;
 
-  getProfits(): Profits;
+  getProfits(): Profits<Accounts>;
+  getHistory(): HistoryObj[];
+
+  getHistoryByOperationType(operationType: OperationType): HistoryObj[];
+  getHistoryByCurrency(currency: Currency): HistoryObj[];
+  getHistoryByDateRange(start: number, end: number): HistoryObj[];
+
+  getAccountHistory(props: BasicOperation): HistoryObj[];
+  getAccountBalance(props: BasicOperation): number;
+
+  getProfitsByOperationType(operationType: OperationType): Accounts;
+  getProfitsByCurrency(currency: Currency): Profits<number>;
 }

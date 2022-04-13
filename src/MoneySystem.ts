@@ -1,5 +1,5 @@
 import {
-  History,
+  HistoryObj,
   Exchange,
   ExchangeRate,
   MoneyOperation,
@@ -7,32 +7,44 @@ import {
   Profits,
   System,
   Transfer,
-  Users,
-  ExchangeRates,
+  User,
+  Currency,
+  BasicOperation,
+  Accounts,
 } from "./types";
-import {
-  exchangeRates,
-  comission,
-  getNewUser,
-  initialProfits,
-} from "./initialSetup";
+import { exchangeRates, comission } from "./initialSetup";
 import { errors } from "./constants";
+import { getNewUser, getProfits } from "./utils";
 
 export class MoneySystem implements System {
-  users: Users;
-  profits: Profits;
-  history: History;
-  exchangeRates: ExchangeRates;
+  users: User[];
+  profits: Profits<Accounts>;
+  history: HistoryObj[];
+  exchangeRates: ExchangeRate[];
 
   constructor() {
-    this.users = [] as Users;
-    this.profits = initialProfits;
-    this.history = [] as History;
+    this.users = [] as User[];
+    this.profits = getProfits<Accounts>();
+    this.history = [] as HistoryObj[];
     this.exchangeRates = exchangeRates;
   }
 
-  getUserIndexById = (id: string) => {
-    return this.users.findIndex((user) => user.id.localeCompare(id));
+  getUserIndexById = (id: string): number => {
+    const index = this.users.findIndex((user) => user.id.localeCompare(id));
+    return this.validateUserSearch(index) as number;
+  };
+
+  getUserById = (id: string): User => {
+    const user = this.users.find((user) => user.id.localeCompare(id));
+    return this.validateUserSearch(user) as User;
+  };
+
+  validateUserSearch = (found: number | User | undefined) => {
+    if (!found || found === -1) {
+      throw new Error(errors.userNotFound);
+    }
+
+    return found;
   };
 
   addUser(): string {
@@ -42,18 +54,26 @@ export class MoneySystem implements System {
     return newUser.id;
   }
 
-  deposit({ userId, currency, amount }: MoneyOperation) {
+  deposit(props: MoneyOperation) {
+    const { userId, currency, amount } = props;
     const index = this.getUserIndexById(userId);
+
     const profit = comission * amount;
 
     this.users[index].accounts[currency] =
       this.users[index].accounts[currency] + amount + profit;
 
-    this.profits[OperationType.DEPOSIT][currency] += profit;
+    const operationType = OperationType.DEPOSIT;
+
+    this.profits[operationType][currency] += profit;
+    this.history.push({ ...props, operation: operationType, date: Date.now() });
   }
 
-  withdraw({ userId, currency, amount }: MoneyOperation) {
+  withdraw(props: MoneyOperation) {
+    const { userId, currency, amount } = props;
+
     const index = this.getUserIndexById(userId);
+
     const profit = comission * amount;
     const newAmount = this.users[index].accounts[currency] - amount - profit;
 
@@ -63,7 +83,11 @@ export class MoneySystem implements System {
 
     this.users[index].accounts[currency] = newAmount;
 
-    this.profits[OperationType.WITHDRAW][currency] += profit;
+    const operationType = OperationType.WITHDRAW;
+
+    this.profits[operationType][currency] += profit;
+
+    this.history.push({ ...props, operation: operationType, date: Date.now() });
   }
 
   send({ userId, recipentId, currency, amount }: Transfer) {
@@ -83,7 +107,17 @@ export class MoneySystem implements System {
     this.users[senderIndex].accounts[currency] = senderAfter;
     this.users[recipentIndex].accounts[currency] = recipentAfter;
 
-    this.profits[OperationType.SEND][currency] += profit;
+    const operationType = OperationType.SEND;
+
+    this.profits[operationType][currency] += profit;
+
+    this.history.push({
+      userId: userId,
+      currency: currency,
+      amount: amount,
+      operation: operationType,
+      date: Date.now(),
+    });
   }
 
   exchange({ userId, currency, targetCurrency, amount }: Exchange) {
@@ -112,10 +146,64 @@ export class MoneySystem implements System {
     this.users[index].accounts[targetCurrency] =
       userTargetCurrencyAmount + convertedAmount;
 
-    this.profits[OperationType.EXCHANGE][currency] += profit;
+    const operationType = OperationType.EXCHANGE;
+
+    this.profits[operationType][currency] += profit;
+
+    this.history.push({
+      userId: userId,
+      currency: currency,
+      amount: amount,
+      operation: operationType,
+      date: Date.now(),
+    });
   }
 
-  getProfits(): Profits {
+  getProfits(): Profits<Accounts> {
     return this.profits;
+  }
+
+  getHistory(): HistoryObj[] {
+    return this.history;
+  }
+
+  getHistoryByOperationType(operationType: OperationType): HistoryObj[] {
+    return this.history.filter(
+      (historyObj) => historyObj.operation === operationType
+    );
+  }
+
+  getHistoryByCurrency(currency: Currency): HistoryObj[] {
+    return this.history.filter(
+      (historyObj) => historyObj.currency === currency
+    );
+  }
+
+  getHistoryByDateRange(start: number, end: number): HistoryObj[] {
+    return this.history.filter(
+      (historyObj) => historyObj.date > start && historyObj.date < end
+    );
+  }
+
+  getAccountHistory({ userId, currency }: BasicOperation): HistoryObj[] {
+    this.getUserIndexById(userId);
+
+    return this.history.filter(
+      (obj) => obj.userId === userId && obj.currency == currency
+    );
+  }
+
+  getAccountBalance({ userId, currency }: BasicOperation): number {
+    const user = this.getUserById(userId);
+
+    return user.accounts[currency];
+  }
+
+  getProfitsByOperationType(operationType: OperationType): Accounts {
+    return this.profits[operationType];
+  }
+
+  getProfitsByCurrency(currency: Currency): Profits<number> {
+    return getProfits<number>(this.profits, currency);
   }
 }
