@@ -1,4 +1,4 @@
-# Money System
+# Money Transfers
 
 Simulation of a platform on which users will be able to make money transfers between each other and currency exchanges. No UI, no REST API, only interfaces.
 

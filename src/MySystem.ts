@@ -5,18 +5,18 @@ import {
   MoneyOperation,
   OperationType,
   Profits,
-  System,
   Transfer,
   User,
   Currency,
   BasicOperation,
   Accounts,
 } from "./types";
+import { System } from "./System";
 import { exchangeRates, comission } from "./initialSetup";
 import { errors } from "./constants";
-import { getNewUser, getProfits } from "./utils";
+import { getNewUser, getProfits, getUserById, getUserIndexById } from "./utils";
 
-export class MoneySystem implements System {
+export class MySystem implements System {
   users: User[];
   profits: Profits<Accounts>;
   history: HistoryObj[];
@@ -29,24 +29,6 @@ export class MoneySystem implements System {
     this.exchangeRates = exchangeRates;
   }
 
-  getUserIndexById = (id: string): number => {
-    const index = this.users.findIndex((user) => user.id.localeCompare(id));
-    return this.validateUserSearch(index) as number;
-  };
-
-  getUserById = (id: string): User => {
-    const user = this.users.find((user) => user.id.localeCompare(id));
-    return this.validateUserSearch(user) as User;
-  };
-
-  validateUserSearch = (found: number | User | undefined) => {
-    if (found === undefined || found === -1) {
-      throw new Error(errors.userNotFound);
-    }
-
-    return found;
-  };
-
   addUser(): string {
     const newUser = getNewUser();
     this.users.push(newUser);
@@ -56,7 +38,7 @@ export class MoneySystem implements System {
 
   deposit(props: MoneyOperation) {
     const { userId, currency, amount } = props;
-    const index = this.getUserIndexById(userId);
+    const index = getUserIndexById(this.users, userId);
 
     const profit = comission * amount;
 
@@ -72,7 +54,7 @@ export class MoneySystem implements System {
   withdraw(props: MoneyOperation) {
     const { userId, currency, amount } = props;
 
-    const index = this.getUserIndexById(userId);
+    const index = getUserIndexById(this.users, userId);
 
     const profit = comission * amount;
     const newAmount = this.users[index].accounts[currency] - amount - profit;
@@ -91,8 +73,8 @@ export class MoneySystem implements System {
   }
 
   send({ userId, recipentId, currency, amount }: Transfer) {
-    const senderIndex = this.getUserIndexById(userId);
-    const recipentIndex = this.getUserIndexById(recipentId);
+    const senderIndex = getUserIndexById(this.users, userId);
+    const recipentIndex = getUserIndexById(this.users, recipentId);
 
     const profit = comission * amount;
 
@@ -121,7 +103,7 @@ export class MoneySystem implements System {
   }
 
   exchange({ userId, currency, targetCurrency, amount }: Exchange) {
-    const index = this.getUserIndexById(userId);
+    const index = getUserIndexById(this.users, userId);
     const userCurrencyAmount = this.users[index].accounts[currency];
     const userTargetCurrencyAmount = this.users[index].accounts[targetCurrency];
 
@@ -186,7 +168,7 @@ export class MoneySystem implements System {
   }
 
   getAccountHistory({ userId, currency }: BasicOperation): HistoryObj[] {
-    this.getUserIndexById(userId);
+    getUserIndexById(this.users, userId);
 
     return this.history.filter(
       (obj) => obj.userId === userId && obj.currency == currency
@@ -194,7 +176,7 @@ export class MoneySystem implements System {
   }
 
   getAccountBalance({ userId, currency }: BasicOperation): number {
-    const user = this.getUserById(userId);
+    const user = getUserById(this.users, userId);
 
     return user.accounts[currency];
   }

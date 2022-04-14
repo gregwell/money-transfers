@@ -53,34 +53,3 @@ export interface HistoryObj extends MoneyOperation {
   operation: OperationType;
   date: number;
 }
-
-export interface System {
-  users: User[];
-  profits: Profits<Accounts>;
-  history: HistoryObj[];
-  exchangeRates: ExchangeRate[];
-
-  getUserIndexById(id: string): number;
-  getUserById(id: string): User;
-  validateUserSearch(found: number | User | undefined): number | User;
-
-  addUser(): string;
-
-  deposit(props: MoneyOperation): void;
-  withdraw(props: MoneyOperation): void;
-  send(props: Transfer): void;
-  exchange(props: Exchange): void;
-
-  getProfits(): Profits<Accounts>;
-  getHistory(): HistoryObj[];
-
-  getHistoryByOperationType(operationType: OperationType): HistoryObj[];
-  getHistoryByCurrency(currency: Currency): HistoryObj[];
-  getHistoryByDateRange(start: number, end: number): HistoryObj[];
-
-  getAccountHistory(props: BasicOperation): HistoryObj[];
-  getAccountBalance(props: BasicOperation): number;
-
-  getProfitsByOperationType(operationType: OperationType): Accounts;
-  getProfitsByCurrency(currency: Currency): Profits<number>;
-}

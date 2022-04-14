@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid";
+import { errors } from "./constants";
 
 import { Currency, Accounts, OperationType, Profits, User } from "./types";
 
@@ -39,3 +40,20 @@ export function getProfits<T>(
 
   return profits;
 }
+
+export const getUserIndexById = (users: User[], id: string): number => {
+  const index = users.findIndex((user) => user.id.localeCompare(id));
+  return validateUserSearch(index) as number;
+};
+
+export const getUserById = (users: User[], id: string): User => {
+  const user = users.find((user) => user.id.localeCompare(id));
+  return validateUserSearch(user) as User;
+};
+
+export const validateUserSearch = (found: number | User | undefined) => {
+  if (found === undefined || found === -1) {
+    throw new Error(errors.userNotFound);
+  }
+  return found;
+};

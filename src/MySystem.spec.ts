@@ -1,6 +1,7 @@
 import { errors } from "./constants";
-import { MoneySystem } from "./MoneySystem";
-import { Currency, System } from "./types";
+import { MySystem } from "./MySystem";
+import { System } from "./System";
+import { Currency } from "./types";
 
 describe("transfers", () => {
   let system: System;
@@ -8,7 +9,7 @@ describe("transfers", () => {
   let linda: string;
 
   beforeEach(() => {
-    system = new MoneySystem();
+    system = new MySystem();
 
     john = system.addUser();
     linda = system.addUser();
