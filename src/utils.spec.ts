@@ -1,8 +1,17 @@
+import { errors } from "./constants";
 import { Accounts, Currency } from "./types";
-import { getEmptyCurrencyAccounts, getNewUser, getProfits } from "./utils";
+import {
+  getEmptyCurrencyAccounts,
+  getNewUser,
+  getProfits,
+  getUserById,
+  getUserIndexById,
+  validateUserSearch,
+} from "./utils";
 import {
   EMPTY_CURRENCY_ACCOUNTS,
   EMPTY_PROFITS,
+  EXISTING_USERS,
   NEW_USER,
   PROFITS_ONE_CURRENCY,
   UUID,
@@ -25,5 +34,26 @@ it("get empty profits ", () => {
 it("get profits of one currency", () => {
   expect(getProfits<number>(EMPTY_PROFITS, Currency.PLN)).toStrictEqual(
     PROFITS_ONE_CURRENCY
+  );
+});
+
+it("get user index by id", () => {
+  expect(
+    getUserIndexById(EXISTING_USERS, "cdfd01fb-309b-4e1c-9117-44d003f5d7fc")
+  ).toStrictEqual(2);
+});
+
+it("get user by id", () => {
+  expect(
+    getUserById(EXISTING_USERS, "cdfd01fb-309b-4e1c-9117-44d003f5d7fc")
+  ).toStrictEqual(EXISTING_USERS[2]);
+});
+
+it("validate user search", () => {
+  expect(() => validateUserSearch(undefined)).toThrow(errors.userNotFound);
+  expect(() => validateUserSearch(-1)).toThrowError(errors.userNotFound);
+  expect(validateUserSearch(2)).toStrictEqual(2);
+  expect(validateUserSearch(EXISTING_USERS[0])).toStrictEqual(
+    EXISTING_USERS[0]
   );
 });

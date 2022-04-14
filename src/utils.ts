@@ -42,16 +42,17 @@ export function getProfits<T>(
 }
 
 export const getUserIndexById = (users: User[], id: string): number => {
-  const index = users.findIndex((user) => user.id.localeCompare(id));
+  const index = users.findIndex((user) => user.id === id);
   return validateUserSearch(index) as number;
 };
 
 export const getUserById = (users: User[], id: string): User => {
-  const user = users.find((user) => user.id.localeCompare(id));
+  const user = users.find((user) => user.id === id);
   return validateUserSearch(user) as User;
 };
 
 export const validateUserSearch = (found: number | User | undefined) => {
+  console.log(found);
   if (found === undefined || found === -1) {
     throw new Error(errors.userNotFound);
   }
