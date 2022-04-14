@@ -52,4 +52,5 @@ export interface Exchange extends MoneyOperation {
 export interface HistoryObj extends MoneyOperation {
   operation: OperationType;
   date: number;
+  comission: number;
 }

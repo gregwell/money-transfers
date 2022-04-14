@@ -17,6 +17,7 @@ export interface System {
   profits: Profits<Accounts>;
   history: HistoryObj[];
   exchangeRates: ExchangeRate[];
+  comission: number;
 
   addUser(): string;
 

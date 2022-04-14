@@ -52,6 +52,7 @@ it("get user by id", () => {
 it("validate user search", () => {
   expect(() => validateUserSearch(undefined)).toThrow(errors.userNotFound);
   expect(() => validateUserSearch(-1)).toThrowError(errors.userNotFound);
+
   expect(validateUserSearch(2)).toStrictEqual(2);
   expect(validateUserSearch(EXISTING_USERS[0])).toStrictEqual(
     EXISTING_USERS[0]

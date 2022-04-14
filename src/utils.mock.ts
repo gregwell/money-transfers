@@ -13,7 +13,7 @@ export const NEW_USER: User = {
   accounts: EMPTY_CURRENCY_ACCOUNTS,
 };
 
-export const EMPTY_PROFITS : Profits<Accounts> = {
+export const EMPTY_PROFITS: Profits<Accounts> = {
   [OperationType.DEPOSIT]: EMPTY_CURRENCY_ACCOUNTS,
   [OperationType.WITHDRAW]: EMPTY_CURRENCY_ACCOUNTS,
   [OperationType.SEND]: EMPTY_CURRENCY_ACCOUNTS,
@@ -27,15 +27,17 @@ export const PROFITS_ONE_CURRENCY: Profits<number> = {
   [OperationType.EXCHANGE]: 0,
 };
 
-export const EXISTING_USERS : User[] = [{
-  id: "adfd01fb-309b-4e1c-9117-44d003f5d7fc",
-  accounts: EMPTY_CURRENCY_ACCOUNTS,
-},
-{
-  id: "bdfd01fb-309b-4e1c-9117-44d003f5d7fc",
-  accounts: EMPTY_CURRENCY_ACCOUNTS,
-},
-{
-  id: "cdfd01fb-309b-4e1c-9117-44d003f5d7fc",
-  accounts: EMPTY_CURRENCY_ACCOUNTS,
-}]
+export const EXISTING_USERS: User[] = [
+  {
+    id: "adfd01fb-309b-4e1c-9117-44d003f5d7fc",
+    accounts: { ...EMPTY_CURRENCY_ACCOUNTS },
+  },
+  {
+    id: "bdfd01fb-309b-4e1c-9117-44d003f5d7fc",
+    accounts: { ...EMPTY_CURRENCY_ACCOUNTS },
+  },
+  {
+    id: "cdfd01fb-309b-4e1c-9117-44d003f5d7fc",
+    accounts: { ...EMPTY_CURRENCY_ACCOUNTS },
+  },
+];

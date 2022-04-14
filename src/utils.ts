@@ -52,7 +52,6 @@ export const getUserById = (users: User[], id: string): User => {
 };
 
 export const validateUserSearch = (found: number | User | undefined) => {
-  console.log(found);
   if (found === undefined || found === -1) {
     throw new Error(errors.userNotFound);
   }

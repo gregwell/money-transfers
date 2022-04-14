@@ -21,12 +21,14 @@ export class MySystem implements System {
   profits: Profits<Accounts>;
   history: HistoryObj[];
   exchangeRates: ExchangeRate[];
+  comission: number;
 
   constructor() {
     this.users = [] as User[];
     this.profits = getProfits<Accounts>();
     this.history = [] as HistoryObj[];
     this.exchangeRates = exchangeRates;
+    this.comission = comission;
   }
 
   addUser(): string {
@@ -40,15 +42,20 @@ export class MySystem implements System {
     const { userId, currency, amount } = props;
     const index = getUserIndexById(this.users, userId);
 
-    const profit = comission * amount;
+    const profit = this.comission * amount;
 
-    this.users[index].accounts[currency] =
-      this.users[index].accounts[currency] + amount + profit;
+    this.users[index].accounts[currency] += amount - profit;
 
     const operationType = OperationType.DEPOSIT;
 
     this.profits[operationType][currency] += profit;
-    this.history.push({ ...props, operation: operationType, date: Date.now() });
+    this.history.push({
+      ...props,
+      operation: operationType,
+      date: Date.now(),
+      amount: amount - profit,
+      comission: profit,
+    });
   }
 
   withdraw(props: MoneyOperation) {
@@ -56,7 +63,7 @@ export class MySystem implements System {
 
     const index = getUserIndexById(this.users, userId);
 
-    const profit = comission * amount;
+    const profit = this.comission * amount;
     const newAmount = this.users[index].accounts[currency] - amount - profit;
 
     if (newAmount < 0) {
@@ -69,14 +76,19 @@ export class MySystem implements System {
 
     this.profits[operationType][currency] += profit;
 
-    this.history.push({ ...props, operation: operationType, date: Date.now() });
+    this.history.push({
+      ...props,
+      operation: operationType,
+      date: Date.now(),
+      comission: profit,
+    });
   }
 
   send({ userId, recipentId, currency, amount }: Transfer) {
     const senderIndex = getUserIndexById(this.users, userId);
     const recipentIndex = getUserIndexById(this.users, recipentId);
 
-    const profit = comission * amount;
+    const profit = this.comission * amount;
 
     const senderAfter =
       this.users[senderIndex].accounts[currency] - amount - profit;
@@ -99,6 +111,7 @@ export class MySystem implements System {
       amount: amount,
       operation: operationType,
       date: Date.now(),
+      comission: profit,
     });
   }
 
@@ -107,7 +120,7 @@ export class MySystem implements System {
     const userCurrencyAmount = this.users[index].accounts[currency];
     const userTargetCurrencyAmount = this.users[index].accounts[targetCurrency];
 
-    const profit = comission * amount;
+    const profit = this.comission * amount;
 
     if (userCurrencyAmount < amount + profit) {
       throw new Error(errors.insufficientFunds);
@@ -138,6 +151,7 @@ export class MySystem implements System {
       amount: amount,
       operation: operationType,
       date: Date.now(),
+      comission: profit,
     });
   }
 
