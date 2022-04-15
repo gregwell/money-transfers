@@ -1,8 +1,6 @@
+import { ExchangeRate, Currency } from "./types";
 
-
-import { ExchangeRate, Currency, User } from "./types";
-
-export const comission: number = 0.05;
+export const comission = 0.05;
 
 export const exchangeRates: ExchangeRate[] = [
   {

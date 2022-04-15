@@ -1,19 +1,13 @@
-import { errors } from "./constants";
 import { MySystem } from "./MySystem";
+import { System } from "./System";
+import { errors } from "./constants";
+import { Currency, ExchangeRate, OperationType } from "./types";
 import {
   HISTORY_OBJECTS,
   HISTORY_OBJECTS_DATE_RANGE,
   HISTORY_OBJECTS_DEPOSIT,
   HISTORY_OBJECTS_EUR,
 } from "./MySystem.mock";
-import { System } from "./System";
-import {
-  BasicOperation,
-  Currency,
-  ExchangeRate,
-  HistoryObj,
-  OperationType,
-} from "./types";
 import {
   EMPTY_CURRENCY_ACCOUNTS,
   EMPTY_PROFITS,
