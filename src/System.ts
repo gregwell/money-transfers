@@ -27,15 +27,14 @@ export interface System {
   exchange(props: Exchange): void;
 
   getProfits(): Profits<Accounts>;
-  getHistory(): HistoryObj[];
+  getProfitsByOperationType(operationType: OperationType): Accounts;
+  getProfitsByCurrency(currency: Currency): Profits<number>;
 
+  getHistory(): HistoryObj[];
   getHistoryByOperationType(operationType: OperationType): HistoryObj[];
   getHistoryByCurrency(currency: Currency): HistoryObj[];
   getHistoryByDateRange(start: number, end: number): HistoryObj[];
 
   getAccountHistory(props: BasicOperation): HistoryObj[];
   getAccountBalance(props: BasicOperation): number;
-
-  getProfitsByOperationType(operationType: OperationType): Accounts;
-  getProfitsByCurrency(currency: Currency): Profits<number>;
 }

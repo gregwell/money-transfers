@@ -131,11 +131,11 @@ export class MySystem implements System {
         rate.pair.includes(currency) && rate.pair.includes(targetCurrency)
     ) as ExchangeRate;
 
-    const sell = ratesPair.pair[0] === currency;
+    const sell = ratesPair.pair[1] === currency;
 
     const convertedAmount = sell
-      ? amount * ratesPair.rates.sell
-      : amount / ratesPair.rates.buy;
+      ? (amount - profit) * ratesPair.rates.sell
+      : (amount - profit) / ratesPair.rates.buy;
 
     this.users[index].accounts[currency] = userCurrencyAmount - amount - profit;
     this.users[index].accounts[targetCurrency] =
@@ -157,6 +157,14 @@ export class MySystem implements System {
 
   getProfits(): Profits<Accounts> {
     return this.profits;
+  }
+
+  getProfitsByOperationType(operationType: OperationType): Accounts {
+    return this.profits[operationType];
+  }
+
+  getProfitsByCurrency(currency: Currency): Profits<number> {
+    return getProfits<number>(this.profits, currency);
   }
 
   getHistory(): HistoryObj[] {
@@ -193,13 +201,5 @@ export class MySystem implements System {
     const user = getUserById(this.users, userId);
 
     return user.accounts[currency];
-  }
-
-  getProfitsByOperationType(operationType: OperationType): Accounts {
-    return this.profits[operationType];
-  }
-
-  getProfitsByCurrency(currency: Currency): Profits<number> {
-    return getProfits<number>(this.profits, currency);
   }
 }

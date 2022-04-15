@@ -14,10 +14,10 @@ export const NEW_USER: User = {
 };
 
 export const EMPTY_PROFITS: Profits<Accounts> = {
-  [OperationType.DEPOSIT]: EMPTY_CURRENCY_ACCOUNTS,
-  [OperationType.WITHDRAW]: EMPTY_CURRENCY_ACCOUNTS,
-  [OperationType.SEND]: EMPTY_CURRENCY_ACCOUNTS,
-  [OperationType.EXCHANGE]: EMPTY_CURRENCY_ACCOUNTS,
+  [OperationType.DEPOSIT]: {...EMPTY_CURRENCY_ACCOUNTS},
+  [OperationType.WITHDRAW]: {...EMPTY_CURRENCY_ACCOUNTS},
+  [OperationType.SEND]: {...EMPTY_CURRENCY_ACCOUNTS},
+  [OperationType.EXCHANGE]: {...EMPTY_CURRENCY_ACCOUNTS},
 };
 
 export const PROFITS_ONE_CURRENCY: Profits<number> = {
