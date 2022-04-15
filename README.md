@@ -24,3 +24,12 @@ Simulation of a platform on which users will be able to make money transfers bet
 ## How to run
 
 No real-life implementation - to run test suites of written functionalities `npm test`
+
+## Notes
+
+Profits were implemented in the following manner:
+
+1. When you deposit PLN 10, you pay PLN 10 and your account is credited with PLN 10 minus commission.
+2. When you withdraw PLN 10, you receive PLN 10 and your account is credited with PLN 10 plus commission.
+3. When you send a transfer for PLN 10, the recipient gets PLN 10 and your account is charged PLN 10 plus commission.
+4. When you exchange PLN 10, the commission is taken from this balance and the rest is exchanged into a foreign currency.
