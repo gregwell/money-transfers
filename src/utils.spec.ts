@@ -15,6 +15,7 @@ import {
   NEW_USER,
   PROFITS_ONE_CURRENCY,
   UUID,
+  UUID3,
 } from "./utils.mock";
 
 jest.mock("uuid", () => ({ v4: () => UUID }));
@@ -39,13 +40,13 @@ it("get profits of one currency", () => {
 
 it("get user index by id", () => {
   expect(
-    getUserIndexById(EXISTING_USERS, "cdfd01fb-309b-4e1c-9117-44d003f5d7fc")
+    getUserIndexById(EXISTING_USERS, UUID3)
   ).toStrictEqual(2);
 });
 
 it("get user by id", () => {
   expect(
-    getUserById(EXISTING_USERS, "cdfd01fb-309b-4e1c-9117-44d003f5d7fc")
+    getUserById(EXISTING_USERS, UUID3)
   ).toStrictEqual(EXISTING_USERS[2]);
 });
 

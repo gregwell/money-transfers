@@ -1,26 +1,35 @@
 import { MySystem } from "./MySystem";
 import { System } from "./System";
 import { errors } from "./constants";
-import { Currency, ExchangeRate, OperationType } from "./types";
+import { Currency, OperationType } from "./types";
 import {
+  BUY_PROPS,
+  COMISSION,
+  DEPOSIT_PROPS,
   HISTORY_OBJECTS,
   HISTORY_OBJECTS_DATE_RANGE,
   HISTORY_OBJECTS_DEPOSIT,
   HISTORY_OBJECTS_EUR,
+  RATES_PLN_EUR,
+  SELL_PROPS,
+  MONEY_OPERATION_PROPS,
+  BASIC_OPERATION_PROPS,
+  PROFITS,
+  TRANSFER_PROPS,
+  MONEY_OPERATION_NO_EXIST_ID_PROPS,
+  HISTORY,
 } from "./MySystem.mock";
 import {
   EMPTY_CURRENCY_ACCOUNTS,
-  EMPTY_PROFITS,
   EXISTING_USERS,
   PROFITS_ONE_CURRENCY,
   UUID,
 } from "./utils.mock";
 
 let system: System;
-let john: string;
-let linda: string;
 
 jest.mock("uuid", () => ({ v4: () => UUID }));
+jest.useFakeTimers("modern").setSystemTime(new Date("2022-04-04"));
 
 describe("my system", () => {
   beforeEach(() => {
@@ -40,91 +49,69 @@ describe("my system", () => {
   });
 
   it("deposit: throws an error when id provided not found", () => {
-    const props = {
-      userId: "123",
-      currency: Currency.PLN,
-      amount: 10,
-    };
-    expect(() => system.deposit(props)).toThrow(errors.userNotFound);
+    expect(() => system.deposit(MONEY_OPERATION_NO_EXIST_ID_PROPS)).toThrow(
+      errors.userNotFound
+    );
   });
 
   it("deposit: changes account balance", () => {
-    const user = system.addUser();
+    system.addUser();
 
-    const props = {
-      userId: user,
-      currency: Currency.PLN,
-      amount: 10,
-    };
-
-    const expected = 10 - system.comission * props.amount;
+    const expected = 10 - COMISSION * MONEY_OPERATION_PROPS.amount;
 
     expect(system.users[0].accounts.PLN).toStrictEqual(0);
-    system.deposit(props);
+
+    system.deposit(MONEY_OPERATION_PROPS);
     expect(system.users[0].accounts.PLN).toStrictEqual(expected);
-    system.deposit(props);
+
+    system.deposit(MONEY_OPERATION_PROPS);
     expect(system.users[0].accounts.PLN).toStrictEqual(2 * expected);
   });
 
   it("withdraw: throws an error when id provided not found", () => {
-    const props = {
-      userId: "123",
-      currency: Currency.PLN,
-      amount: 10,
-    };
-    expect(() => system.withdraw(props)).toThrow(errors.userNotFound);
+    expect(() => system.withdraw(MONEY_OPERATION_NO_EXIST_ID_PROPS)).toThrow(
+      errors.userNotFound
+    );
   });
 
   it("withdraw: throws an error when insufficient funds", () => {
-    const user = system.addUser();
+    system.addUser();
 
-    const withdrawProps = {
-      userId: user,
-      currency: Currency.PLN,
-      amount: 10,
-    };
-
-    expect(() => system.withdraw(withdrawProps)).toThrow(
+    expect(() => system.withdraw(MONEY_OPERATION_PROPS)).toThrow(
       errors.insufficientFunds
     );
   });
 
   it("withdraw: changes account balance", () => {
-    const user = system.addUser();
+    system.addUser();
 
-    const withdrawProps = {
-      userId: user,
-      currency: Currency.PLN,
-      amount: 10,
-    };
-
-    const systemProfit = system.comission * withdrawProps.amount;
+    const systemProfit = COMISSION * MONEY_OPERATION_PROPS.amount;
 
     const depositAmount = 10 - systemProfit;
     const withdrawalAmount = 10 + systemProfit;
 
     const expected = 2 * depositAmount - withdrawalAmount;
 
-    system.deposit(withdrawProps);
-    system.deposit(withdrawProps);
-    system.withdraw(withdrawProps);
+    system.deposit(MONEY_OPERATION_PROPS);
+    system.deposit(MONEY_OPERATION_PROPS);
+
+    system.withdraw(MONEY_OPERATION_PROPS);
 
     expect(system.users[0].accounts.PLN).toStrictEqual(expected);
   });
 
   it("send: throws an error when any id provided not found", () => {
     system.users = EXISTING_USERS;
-    const userId = system.users[0].id;
 
     const senderNotFound = {
       userId: "123",
-      recipentId: userId,
+      recipentId: UUID,
       currency: Currency.PLN,
       amount: 1,
     };
 
     const recipentNotFound = {
-      userId: userId,
+      userId: UUID,
       recipentId: "321",
       currency: Currency.PLN,
       amount: 1,
@@ -136,49 +123,25 @@ describe("my system", () => {
 
   it("send: throws an error when the sender has insufficient funds", () => {
     system.users = EXISTING_USERS;
-    john = system.users[0].id;
-    linda = system.users[1].id;
-
-    const props = {
-      userId: john,
-      recipentId: linda,
-      amount: 20,
-      currency: Currency.PLN,
-    };
 
     expect(() => {
-      system.send(props);
+      system.send(TRANSFER_PROPS);
     }).toThrow(errors.insufficientFunds);
   });
 
   it("send: changes accounts balance", () => {
     system.users = EXISTING_USERS;
-    john = system.users[0].id;
-    linda = system.users[1].id;
 
-    const deposit = {
-      userId: john,
-      currency: Currency.PLN,
-      amount: 10,
-    };
+    const transferProfit = COMISSION * TRANSFER_PROPS.amount;
+    const depositProfit = COMISSION * DEPOSIT_PROPS.amount;
 
-    const transfer = {
-      userId: john,
-      recipentId: linda,
-      amount: 5,
-      currency: Currency.PLN,
-    };
+    const depositNet = DEPOSIT_PROPS.amount - depositProfit;
 
-    const transferProfit = system.comission * transfer.amount;
-    const depositProfit = system.comission * deposit.amount;
+    const senderAfter = depositNet - TRANSFER_PROPS.amount - transferProfit;
+    const recipentAfter = TRANSFER_PROPS.amount;
 
-    const depositNet = deposit.amount - depositProfit;
-
-    const senderAfter = depositNet - transfer.amount - transferProfit;
-    const recipentAfter = transfer.amount;
-
-    system.deposit(deposit);
-    system.send(transfer);
+    system.deposit(DEPOSIT_PROPS);
+    system.send(TRANSFER_PROPS);
 
     expect(system.users[0].accounts.PLN).toStrictEqual(senderAfter);
     expect(system.users[1].accounts.PLN).toStrictEqual(recipentAfter);
@@ -195,79 +158,41 @@ describe("my system", () => {
   });
 
   it("exchange: throws an error when insufficient funds", () => {
-    const user = system.addUser();
+    system.addUser();
 
-    const exchangeProps = {
-      userId: user,
-      currency: Currency.PLN,
-      targetCurrency: Currency.EUR,
-      amount: 10,
-    };
-
-    expect(() => system.exchange(exchangeProps)).toThrow(
-      errors.insufficientFunds
-    );
+    expect(() => system.exchange(BUY_PROPS)).toThrow(errors.insufficientFunds);
   });
 
   it("exchange: change accounts balance", () => {
-    const user = system.addUser();
-
-    const depositProps = {
-      userId: user,
-      currency: Currency.PLN,
-      amount: 3000,
-    };
-
-    const buyProps = {
-      userId: user,
-      currency: Currency.PLN,
-      targetCurrency: Currency.EUR,
-      amount: 2000,
-    };
-
-    const sellProps = {
-      userId: user,
-      currency: Currency.EUR,
-      targetCurrency: Currency.PLN,
-      amount: 100,
-    };
+    system.addUser();
 
     const [depositProfit, buyProfit, sellProfit] = [
-      depositProps,
-      buyProps,
-      sellProps,
-    ].map((props) => props.amount * system.comission);
+      DEPOSIT_PROPS,
+      BUY_PROPS,
+      SELL_PROPS,
+    ].map((props) => props.amount * COMISSION);
 
-    const ratesObj = system.exchangeRates.find(
-      (rates) =>
-        rates.pair[0] === Currency.PLN && rates.pair[1] === Currency.EUR
-    ) as ExchangeRate;
+    const plnAfterDeposit = DEPOSIT_PROPS.amount - depositProfit;
 
-    const plnAfterDeposit = depositProps.amount - depositProfit;
-
-    const plnAfterBuy = plnAfterDeposit - buyProps.amount - buyProfit;
-    const eurAfterBuy = (buyProps.amount - buyProfit) / ratesObj.rates.buy;
+    const plnAfterBuy = plnAfterDeposit - BUY_PROPS.amount - buyProfit;
+    const eurAfterBuy =
+      (BUY_PROPS.amount - buyProfit) / RATES_PLN_EUR.rates.buy;
 
     const plnAfterSell =
-      plnAfterBuy + (sellProps.amount - sellProfit) * ratesObj.rates.sell;
+      plnAfterBuy + (SELL_PROPS.amount - sellProfit) * RATES_PLN_EUR.rates.sell;
+    const eurAfterSell = eurAfterBuy - (SELL_PROPS.amount + sellProfit);
 
-    const eurAfterSell = eurAfterBuy - (sellProps.amount + sellProfit);
-
-    system.deposit(depositProps);
+    system.deposit(DEPOSIT_PROPS);
     expect(system.users[0].accounts.PLN).toStrictEqual(plnAfterDeposit);
     expect(system.users[0].accounts.EUR).toStrictEqual(0);
 
-    system.exchange(buyProps);
+    system.exchange(BUY_PROPS);
     expect(system.users[0].accounts.PLN).toStrictEqual(plnAfterBuy);
     expect(system.users[0].accounts.EUR).toStrictEqual(eurAfterBuy);
 
-    system.exchange(sellProps);
+    system.exchange(SELL_PROPS);
     expect(system.users[0].accounts.PLN).toStrictEqual(plnAfterSell);
     expect(system.users[0].accounts.EUR).toStrictEqual(eurAfterSell);
-  });
-
-  it("getProfits", () => {
-    expect(system.getProfits()).toStrictEqual(EMPTY_PROFITS);
   });
 
   it("getProfitsByOperationType", () => {
@@ -280,11 +205,6 @@ describe("my system", () => {
     expect(system.getProfitsByCurrency(Currency.PLN)).toStrictEqual(
       PROFITS_ONE_CURRENCY
     );
-  });
-
-  it("getHistory", () => {
-    system.history = HISTORY_OBJECTS;
-    expect(system.getHistory()).toStrictEqual(HISTORY_OBJECTS);
   });
 
   it("getHistoryByOperationType", () => {
@@ -311,24 +231,41 @@ describe("my system", () => {
   it("getAccountHistory", () => {
     system.history = HISTORY_OBJECTS;
 
-    const userId = system.addUser();
+    system.addUser();
 
-    const props = {
-      currency: Currency.EUR,
-      userId: userId,
-    };
-
-    expect(system.getAccountHistory(props)).toStrictEqual(HISTORY_OBJECTS_EUR);
+    expect(system.getAccountHistory(BASIC_OPERATION_PROPS)).toStrictEqual(
+      HISTORY_OBJECTS_EUR
+    );
   });
 
   it("getAccountBalance", () => {
-    const userId = system.addUser();
+    system.addUser();
     system.users[0].accounts.EUR = 10;
 
-    const props = {
-      userId: userId,
-      currency: Currency.EUR,
-    };
-    expect(system.getAccountBalance(props)).toStrictEqual(10);
+    expect(system.getAccountBalance(BASIC_OPERATION_PROPS)).toStrictEqual(10);
+  });
+
+  it("calculates profits", () => {
+    system.users = EXISTING_USERS;
+
+    system.deposit(DEPOSIT_PROPS);
+    system.exchange(BUY_PROPS);
+    system.exchange(SELL_PROPS);
+    system.withdraw(MONEY_OPERATION_PROPS);
+    system.send(TRANSFER_PROPS);
+
+    expect(system.getProfits()).toStrictEqual(PROFITS);
+  });
+
+  it("adds items to history", () => {
+    system.users = EXISTING_USERS;
+
+    system.deposit(DEPOSIT_PROPS);
+    system.exchange(BUY_PROPS);
+    system.exchange(SELL_PROPS);
+    system.withdraw(MONEY_OPERATION_PROPS);
+    system.send(TRANSFER_PROPS);
+
+    expect(system.getHistory()).toStrictEqual(HISTORY);
   });
 });

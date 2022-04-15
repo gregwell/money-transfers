@@ -1,6 +1,8 @@
 import { Accounts, Currency, OperationType, Profits, User } from "./types";
 
 export const UUID = "adfd01fb-309b-4e1c-9117-44d003f5d7fc";
+export const UUID2 = "bdfd01fb-309b-4e1c-9117-44d003f5d7fc";
+export const UUID3 = "cdfd01fb-309b-4e1c-9117-44d003f5d7fc";
 
 export const EMPTY_CURRENCY_ACCOUNTS: Accounts = {
   [Currency.PLN]: 0,
@@ -14,10 +16,10 @@ export const NEW_USER: User = {
 };
 
 export const EMPTY_PROFITS: Profits<Accounts> = {
-  [OperationType.DEPOSIT]: {...EMPTY_CURRENCY_ACCOUNTS},
-  [OperationType.WITHDRAW]: {...EMPTY_CURRENCY_ACCOUNTS},
-  [OperationType.SEND]: {...EMPTY_CURRENCY_ACCOUNTS},
-  [OperationType.EXCHANGE]: {...EMPTY_CURRENCY_ACCOUNTS},
+  [OperationType.DEPOSIT]: { ...EMPTY_CURRENCY_ACCOUNTS },
+  [OperationType.WITHDRAW]: { ...EMPTY_CURRENCY_ACCOUNTS },
+  [OperationType.SEND]: { ...EMPTY_CURRENCY_ACCOUNTS },
+  [OperationType.EXCHANGE]: { ...EMPTY_CURRENCY_ACCOUNTS },
 };
 
 export const PROFITS_ONE_CURRENCY: Profits<number> = {
@@ -29,15 +31,15 @@ export const PROFITS_ONE_CURRENCY: Profits<number> = {
 
 export const EXISTING_USERS: User[] = [
   {
-    id: "adfd01fb-309b-4e1c-9117-44d003f5d7fc",
+    id: UUID,
     accounts: { ...EMPTY_CURRENCY_ACCOUNTS },
   },
   {
-    id: "bdfd01fb-309b-4e1c-9117-44d003f5d7fc",
+    id: UUID2,
     accounts: { ...EMPTY_CURRENCY_ACCOUNTS },
   },
   {
-    id: "cdfd01fb-309b-4e1c-9117-44d003f5d7fc",
+    id: UUID3,
     accounts: { ...EMPTY_CURRENCY_ACCOUNTS },
   },
 ];
