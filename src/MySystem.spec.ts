@@ -54,7 +54,7 @@ describe("my system", () => {
     expect(() => system.deposit(props)).toThrow(errors.userNotFound);
   });
 
-  it("deposit: deposit successful", () => {
+  it("deposit: changes account balance", () => {
     const user = system.addUser();
 
     const props = {
@@ -95,7 +95,7 @@ describe("my system", () => {
     );
   });
 
-  it("withdraw: withdraw succesful", () => {
+  it("withdraw: changes account balance", () => {
     const user = system.addUser();
 
     const withdrawProps = {
@@ -157,7 +157,7 @@ describe("my system", () => {
     }).toThrow(errors.insufficientFunds);
   });
 
-  it("send: send successful", () => {
+  it("send: changes accounts balance", () => {
     system.users = EXISTING_USERS;
     john = system.users[0].id;
     linda = system.users[1].id;
@@ -215,7 +215,7 @@ describe("my system", () => {
     );
   });
 
-  it("exchange: exchange succesfull", () => {
+  it("exchange: change accounts balance", () => {
     const user = system.addUser();
 
     const depositProps = {
